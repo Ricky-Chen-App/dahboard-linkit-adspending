@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spending ADs By Operator - LinkIT360</title>
+<style>
+  :root{
+    --side:#c9e8fb; --navy:#1f2a44; --bg:#f6f6f6; --green:#0f9d3a; --red:#e5322d;
+    --ctry:#e6d6fb; --row:#f4ffc9; --mo:#0b5cad; --mo-bg:#e3f0ff;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:#111;display:flex;min-height:100vh;font-size:14px}
+  aside{width:230px;background:var(--side);padding:24px 18px;flex-shrink:0}
+  .logo{font-size:30px;font-weight:300;letter-spacing:1px;margin-bottom:40px;padding-left:20px}
+  .logo b{font-weight:700}
+  nav a{display:flex;align-items:center;gap:16px;padding:16px 18px;font-weight:600;font-size:15px;color:#111;text-decoration:none}
+  nav a i{width:18px;height:18px;background:#111;border-radius:4px;display:inline-block;opacity:.85}
+  main{flex:1;min-width:0}
+  header{background:#fff;height:78px;display:flex;align-items:center;justify-content:space-between;padding:0 30px;border-bottom:1px solid #eee}
+  .user{display:flex;align-items:center;gap:12px;color:#0b3fd1;font-weight:700}
+  .user span{width:34px;height:34px;border-radius:50%;background:#e8b9a0;display:inline-block}
+  .clock{font-weight:600}
+  .wrap{padding:28px 36px}
+  h2{font-weight:400;color:#777;font-size:22px;margin-bottom:26px}
+  .card{background:#fff;border-radius:8px;padding:24px 22px;box-shadow:0 1px 4px rgba(0,0,0,.06);margin-bottom:26px}
+  .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+  label{display:block;font-size:16px;margin-bottom:10px}
+  select,input{width:100%;height:36px;border:1px solid #bbb;border-radius:6px;padding:0 8px;font-size:13px;background:#fff}
+  .actions{display:flex;gap:12px;align-items:end}
+  button{height:36px;border:0;border-radius:4px;padding:0 20px;font-weight:600;cursor:pointer;font-size:14px}
+  .btn-dark{background:#071a4a;color:#fff}
+  .btn-light{background:#e4e8ef;color:#222}
+  .btn-green{background:#0c7a1c;color:#fff;height:44px;font-size:16px;padding:0 30px}
+  .bar{display:flex;align-items:center;gap:14px;margin-bottom:16px}
+  .month{background:#0d1d4a;color:#fff;font-weight:700;padding:7px 12px;border-radius:4px;font-size:14px}
+  .line{flex:1;height:1px;background:#0d1d4a}
+  .toggle{display:inline-flex;border:1px solid #0d1d4a;border-radius:6px;overflow:hidden}
+  .toggle button{background:#fff;color:#0d1d4a;border-radius:0;height:34px;padding:0 14px}
+  .toggle button.on{background:#0d1d4a;color:#fff}
+  .tbl-wrap{overflow-x:auto;background:#fff}
+  table{border-collapse:collapse;width:100%;min-width:1100px}
+  th{background:var(--navy);color:#fff;text-align:left;font-weight:500;padding:14px 12px;font-size:14px;white-space:nowrap}
+  th.mo-h{background:#0b3d7a}
+  td{padding:9px 12px;border:1px solid #e3e3e3;white-space:nowrap;vertical-align:middle}
+  td.name{min-width:230px}
+  tr.all td{background:#fff;font-weight:700;font-size:15px}
+  tr.ctry td{background:var(--ctry);font-weight:700;font-size:15px}
+  tr.op td{background:var(--row)}
+  tr.op td.name{padding-left:42px}
+  .info{display:inline-block;width:18px;height:18px;border-radius:50%;background:#1a56e8;color:#fff;font-size:12px;text-align:center;line-height:18px;font-weight:700;margin-left:6px}
+  .cost{font-weight:700}
+  .cost.up{color:var(--green)} .cost.down{color:var(--red)}
+  .pct{font-size:11px;font-weight:400;margin-left:3px}
+  .pct.up{color:var(--green)} .pct.down{color:var(--red)} .pct.flat{color:#555}
+  .mo{display:inline-block;margin-top:3px;font-size:12px;font-weight:700;color:var(--mo);background:var(--mo-bg);border-radius:10px;padding:1px 8px}
+  .mo.zero{color:#888;background:#eee}
+  td.mo-col{background:var(--mo-bg)!important;color:var(--mo);font-weight:700}
+  tr.op td.mo-col,tr.ctry td.mo-col{background:#d4e7ff!important}
+  body.v-cost .mo,body.v-cost .m-col,body.v-cost .sc{display:none}
+  body.v-mo .sm{display:none}
+  body.v-mo .cost,body.v-mo .pct,body.v-mo .c-col{display:none}
+  .mo{margin-top:0;font-size:15px;font-weight:700;background:none;padding:0;border-radius:0}
+  .mo.zero{background:none;color:#888}
+  body.v-both .mo{display:inline-block;margin-top:3px;font-size:12px;background:var(--mo-bg);padding:1px 8px;border-radius:10px}
+  body.v-both .mo.zero{background:#eee;color:#888}
+  body.v-both .mo::before{content:'MO '}
+  body.v-both td .mo{display:table;}
+  .note{font-size:12px;color:#888;margin-top:10px}
+</style>
+</head>
+<body class="v-both">
+<aside>
+  <div class="logo">Link<b>IT</b> 360</div>
+  <nav>
+    <a href="#"><i></i>Dashboard</a><a href="#"><i></i>Report</a><a href="#"><i></i>Analytic</a>
+    <a href="#"><i></i>Management</a><a href="#"><i></i>Finance</a><a href="#"><i></i>Activity Log</a>
+    <a href="#"><i></i>Service Catalogue</a><a href="#"><i></i>Grouping Operator</a>
+    <a href="#"><i></i>Product Management</a><a href="#"><i></i>Pivot Management</a>
+    <a href="#"><i></i>Tools Management</a><a href="#"><i></i>Project Management</a>
+  </nav>
+</aside>
+<main>
+  <header>
+    <div class="user"><span></span>Admin</div>
+    <div class="clock" id="clock">2026-11-09 15:42:08</div>
+  </header>
+  <div class="wrap">
+    <h2>Spending ADs By Operator</h2>
+
+    <div class="card">
+      <div class="grid">
+        <div><label>Data Type</label><select><option>Daily Reports</option></select></div>
+        <div><label>Report Type</label><select><option>Operator Summary</option></select></div>
+        <div><label>Country</label><select><option>Select Country</option></select></div>
+        <div><label>Operator</label><input type="text"></div>
+        <div><label>Date Range</label><select><option>Select Date</option></select></div>
+        <div class="actions"><button class="btn-dark">&#128269; Search</button><button class="btn-light">Reset</button></div>
+        <div><label>Show Data Base On:</label>
+          <select><option>Highest Cost Campaign</option><option>Highest MO</option></select></div>
+        <div class="actions"><button class="btn-dark">&#8645; Sort</button></div>
+      </div>
+    </div>
+
+    <div class="bar">
+      <span class="month">OCTOBER 2026</span><span class="line"></span>
+      <div class="toggle" id="toggle">
+        <button data-v="both" class="on">Cost + MO</button>
+        <button data-v="cost">Cost</button>
+        <button data-v="mo">MO</button>
+      </div>
+      <button class="btn-green">Export XLS</button>
+    </div>
+
+    <div class="tbl-wrap">
+      <table id="tbl">
+        <thead id="thead"></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+    <p class="note">Catatan: angka MO di atas masih data contoh. Ganti array <code>DATA</code> di script dengan data API/DB asli.</p>
+  </div>
+</main>
+
+<script>
+/* ===== DATA (cost = spending, mo = jumlah MO masuk). Ganti dengan data asli ===== */
+const DAYS = ['09','08','07','06','05','04'];
+// tiap hari: [cost, pctChange, mo]
+const DATA = {
+  country: 'Indonesia',
+  rows: [
+    {name:'linkit-direct-tsel',   days:[[409,0,41],[502,-9,50],[552,-6.7,58],[592,-11.4,63],[668,500,71],[111,0,12]]},
+    {name:'id-tselads-digmagz',   days:[[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0]]},
+    {name:'id-tselads-gemezz2',   days:[[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0]]},
+    {name:'pass-direct-tsel2',    days:[[46.66,0,6],[54.91,-11,7],[61.73,-3.6,8],[64.01,45.7,9],[43.94,-73.3,5],[165,0,21]]},
+    {name:'id-telkomsel-mks',     days:[[31.82,0,4],[159,17.5,19],[135,-32.8,16],[201,56.1,24],[129,123,15],[57.8,0,7]]},
+    {name:'waki-direct-tsel',     days:[[19.02,0,2],[64.29,-10.5,8],[71.8,16.3,9],[61.73,199,7],[20.65,-63.6,3],[56.8,0,7]]}
+  ],
+  // total & avg cost dari report asli
+  fixedCost:{'linkit-direct-tsel':[6180,206],'id-tselads-digmagz':[4507,150],'id-tselads-gemezz2':[2552,85.08],
+             'pass-direct-tsel2':[2468,82.26],'id-telkomsel-mks':[1545,51.49],'waki-direct-tsel':[1515,50.5]},
+  // total MO per operator (contoh)
+  fixedMO:{'linkit-direct-tsel':742,'id-tselads-digmagz':518,'id-tselads-gemezz2':301,
+           'pass-direct-tsel2':296,'id-telkomsel-mks':188,'waki-direct-tsel':181},
+  allCost:[109991,3666,109991], allMO:12980,
+  allDays:[[1831,-38.4,214],[2971,17.9,352],[2519,2.3,301],[2462,-3.6,293],[2554,45.9,305],[1750,0,208]],
+  ctryDays:[[561,-38,66],[904,-6.6,108],[968,-7.2,115],[1043,13,124],[923,74.6,110],[529,0,63]],
+  ctryTotal:[26092,870,26092], ctryMO:3092
+};
+
+const fmt = n => Number(n).toLocaleString('en-US',{maximumFractionDigits:2});
+const cls = p => p>0?'up':(p<0?'down':'flat');
+
+function dayCell(c){
+  const [cost,pct,mo]=c;
+  return '<td><span class="cost '+(pct<0?'down':(pct>0?'up':''))+'">'+fmt(cost)+'</span>'
+    +'<span class="pct '+cls(pct)+'">('+pct+' %)</span>'
+    +'<span class="mo '+(mo?'':'zero')+'">'+fmt(mo)+'</span></td>';
+}
+function head(first){
+  return '<tr><th>'+first+'</th><th>Total</th><th>Avg</th><th>T.Mo.End</th>'
+    + DAYS.map(d=>'<th>'+d+'</th>').join('')+'</tr>';
+}
+var DAYS_IN_MONTH = 30; // sama seperti pembagi Avg di report cost (26,092 / 870 = 30)
+function pair(c, m){
+  return '<td><span class="cost">'+fmt(c)+'</span><span class="mo '+(m?'':'zero')+'">'+fmt(m)+'</span></td>';
+}
+function summary(label, cls_, cost, mo, days){
+  return '<tr class="'+cls_+'"><td class="name">'+label+'</td>'
+    +pair(cost[0],mo)+pair(cost[1],mo/DAYS_IN_MONTH)+pair(cost[2],mo)
+    +days.map(dayCell).join('')+'</tr>';
+}
+
+let h = head('ALL');
+let b = summary('All Operator','all',DATA.allCost,DATA.allMO,DATA.allDays);
+b += '<tr><td colspan="10" style="background:#f4f4f4;height:28px;padding:0"></td></tr>';
+b += '<tr>'+head('Country').replace(/^<tr>|<\/tr>$/g,'').replace(/^/,'')+'</tr>';
+b += summary('&#127470;&#127465; &minus; '+DATA.country,'ctry',DATA.ctryTotal,DATA.ctryMO,DATA.ctryDays);
+DATA.rows.forEach(r=>{
+  const fc = DATA.fixedCost[r.name], mo = DATA.fixedMO[r.name];
+  b += summary(r.name+'<span class="info">i</span>','op',[fc[0],fc[1],fc[0]],mo,r.days);
+});
+document.getElementById('thead').innerHTML = h;
+document.getElementById('tbody').innerHTML = b;
+
+/* header kedua (Country) pakai gaya header */
+document.querySelectorAll('#tbody > tr:nth-child(3) th').forEach(()=>{});
+
+document.querySelectorAll('#toggle button').forEach(btn=>btn.onclick=()=>{
+  document.querySelectorAll('#toggle button').forEach(x=>x.classList.remove('on'));
+  btn.classList.add('on');
+  document.body.className='v-'+btn.dataset.v;
+});
+</script>
+</body>
+</html>
